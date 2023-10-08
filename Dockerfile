@@ -1,11 +1,10 @@
-FROM node
+FROM node:18
 
 WORKDIR /
 
 COPY ./src .
 COPY package.json .
 COPY package-lock.json .
-COPY .env .
 
 RUN npm install
 

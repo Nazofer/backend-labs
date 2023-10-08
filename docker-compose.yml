@@ -1,7 +1,10 @@
 version: '3'
 services:
   node-app:
-    image: sha256:2521bd9dc4e34c2c364219eaa2d17bdac2db2d93a3e9394d19faf98920908762
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "5000:5000"
     volumes:
