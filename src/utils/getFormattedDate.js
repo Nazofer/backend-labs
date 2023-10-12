@@ -8,6 +8,8 @@ export const getFormattedDate = () => {
     hour: 'numeric',
     minute: 'numeric',
     second: 'numeric',
+    hour12: false,
+    timeZone: 'Europe/Kyiv',
   };
   const formattedDate = new Intl.DateTimeFormat(lang, options).format(date);
 
