@@ -74,20 +74,22 @@ export class RecordsController extends BaseController {
       return this.send(res, 400, { message: 'Missing userId or categoryId' });
     }
 
-    const records = [];
+    const filteredRecords = [];
 
     if (userId) {
-      records.push(...this.records.filter((u) => u.userId === Number(userId)));
+      const recordsWithUserId = this.records.filter((u) => u.userId === Number(userId) && !filteredRecords.includes(u));
+      filteredRecords.push(...recordsWithUserId);
     }
 
     if (categoryId) {
-      records.push(...this.records.filter((u) => u.categoryId === Number(categoryId)));
+      const recordsWithCategoryId = this.records.filter((u) => u.categoryId === Number(categoryId) && !filteredRecords.includes(u));
+      filteredRecords.push(...recordsWithCategoryId);
     }
 
-    if (records.length === 0) {
+    if (filteredRecords.length === 0) {
       return this.send(res, 404, { message: 'Record not found' });
     }
 
-    return this.ok(res, records);
+    return this.ok(res, filteredRecords);
   }
 }
