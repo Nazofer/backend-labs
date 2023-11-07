@@ -14,7 +14,7 @@ The practical task is to develop a basic REST API application for cost accountin
 
 1. Clone repo: `git clone https://github.com/Nazofer/backend_labs`
 
-2. Checkout to first-lab branch: `git checkout second-lab`
+2. Checkout to branch: `git checkout second-lab`
 
 3. Install dependencies: `npm install`
 
