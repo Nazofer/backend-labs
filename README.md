@@ -12,7 +12,7 @@ The practical task is to develop a basic REST API application for cost accountin
 
 ### Getting started
 
-1. Clone repo: `git clone https://github.com/Nazofer/backend_labs`
+1. Clone repo: `git clone https://github.com/Nazofer/backend-labs`
 
 2. Checkout to branch: `git checkout second-lab`
 
