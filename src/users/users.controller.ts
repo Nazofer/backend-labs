@@ -1,33 +1,42 @@
+import { inject, injectable } from 'inversify';
 import { BaseController } from '../common/base.controller.js';
+import { TYPES } from '../types.js';
+import { ILogger } from '../logger/logger.interface.js';
+import 'reflect-metadata';
+import { Request, Response, NextFunction } from 'express';
+import { User } from './user.interface.js';
+import { IUsersController } from './users.controller.interface.js';
 
+@injectable()
+export class UsersController
+  extends BaseController
+  implements IUsersController
+{
+  users: User[] = [{ id: 1, name: 'Ryan Gosling' }];
 
-export class UserController extends BaseController {
-  users;
-
-  constructor(users) {
-    super();
-    this.users = users;
-    this._bindRoutes([
+  constructor(@inject(TYPES.ILogger) private loggerService: ILogger) {
+    super(loggerService);
+    this.bindRoutes([
       {
         method: 'post',
         path: '/',
-        func: this.createUser
+        func: this.createUser,
       },
       {
         method: 'delete',
         path: '/:id',
-        func: this.deleteUser
+        func: this.deleteUser,
       },
       {
         method: 'get',
         path: '/',
-        func: this.getUsers
+        func: this.getUsers,
       },
       {
         method: 'get',
         path: '/:id',
-        func: this.getUser
-      }
+        func: this.getUser,
+      },
     ]);
   }
 
@@ -35,7 +44,7 @@ export class UserController extends BaseController {
     return this.users.length + 1;
   }
 
-  createUser(req, res) {
+  createUser(req: Request, res: Response) {
     const { name } = req.body;
     const user = {
       id: this._generateId(),
@@ -45,7 +54,7 @@ export class UserController extends BaseController {
     return this.created(res, user);
   }
 
-  deleteUser(req, res) {
+  deleteUser(req: Request, res: Response) {
     const { id } = req.params;
     const user = this.users.find((u) => u.id === Number(id));
     if (!user) {
@@ -55,11 +64,11 @@ export class UserController extends BaseController {
     return this.ok(res, user);
   }
 
-  getUsers(req, res) {
+  getUsers(req: Request, res: Response) {
     return this.ok(res, this.users);
   }
 
-  getUser(req, res) {
+  getUser(req: Request, res: Response) {
     const { id } = req.params;
     const user = this.users.find((u) => u.id === Number(id));
     if (!user) {

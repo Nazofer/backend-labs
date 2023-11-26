@@ -1,32 +1,45 @@
+import { inject, injectable } from 'inversify';
 import { BaseController } from '../common/base.controller.js';
+import { TYPES } from '../types.js';
+import { ILogger } from '../logger/logger.interface.js';
+import 'reflect-metadata';
+import { Request, Response, NextFunction } from 'express';
+import { Category } from './category.interface.js';
+import { ICategoriesController } from './categories.controller.interface.js';
 
-export class CategoriesController extends BaseController {
-  categories;
+@injectable()
+export class CategoriesController
+  extends BaseController
+  implements ICategoriesController
+{
+  categories: Category[] = [
+    { id: 1, name: 'Category 1' },
+    { id: 2, name: 'Category 2' },
+  ];
 
-  constructor(categories) {
-    super();
-    this.categories = categories;
-    this._bindRoutes([
+  constructor(@inject(TYPES.ILogger) private loggerService: ILogger) {
+    super(loggerService);
+    this.bindRoutes([
       {
         method: 'post',
         path: '/',
-        func: this.createCategory
+        func: this.createCategory,
       },
       {
         method: 'delete',
         path: '/:id',
-        func: this.deleteCategory
+        func: this.deleteCategory,
       },
       {
         method: 'get',
         path: '/',
-        func: this.getCategories
+        func: this.getCategories,
       },
       {
         method: 'get',
         path: '/:id',
-        func: this.getCategory
-      }
+        func: this.getCategory,
+      },
     ]);
   }
 
@@ -34,7 +47,7 @@ export class CategoriesController extends BaseController {
     return this.categories.length + 1;
   }
 
-  createCategory(req, res) {
+  createCategory(req: Request, res: Response) {
     const { name } = req.body;
     const category = {
       id: this._generateId(),
@@ -44,7 +57,7 @@ export class CategoriesController extends BaseController {
     return this.created(res, category);
   }
 
-  deleteCategory(req, res) {
+  deleteCategory(req: Request, res: Response) {
     const { id } = req.params;
     const category = this.categories.find((u) => u.id === Number(id));
     if (!category) {
@@ -54,11 +67,11 @@ export class CategoriesController extends BaseController {
     return this.ok(res, category);
   }
 
-  getCategories(req, res) {
+  getCategories(req: Request, res: Response) {
     return this.ok(res, this.categories);
   }
 
-  getCategory(req, res) {
+  getCategory(req: Request, res: Response) {
     const { id } = req.params;
     const category = this.categories.find((u) => u.id === Number(id));
     if (!category) {
