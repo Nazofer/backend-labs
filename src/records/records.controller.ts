@@ -5,23 +5,17 @@ import { ILogger } from '../logger/logger.interface.js';
 import 'reflect-metadata';
 import { Request, Response, NextFunction } from 'express';
 import { IRecordsController } from './records.controller.interface.js';
+import { IRecordsService } from './records.service.interface.js';
 
 @injectable()
 export class RecordsController
   extends BaseController
   implements IRecordsController
 {
-  records = [
-    {
-      id: 1,
-      userId: 1,
-      categoryId: 1,
-      createdAt: new Date(),
-      amount: 100,
-    },
-  ];
-
-  constructor(@inject(TYPES.ILogger) private loggerService: ILogger) {
+  constructor(
+    @inject(TYPES.ILogger) private loggerService: ILogger,
+    @inject(TYPES.IRecordsService) private recordsService: IRecordsService
+  ) {
     super(loggerService);
     this.bindRoutes([
       {
@@ -47,70 +41,54 @@ export class RecordsController
     ]);
   }
 
-  _generateId() {
-    return this.records.length + 1;
-  }
-
-  createRecord(req: Request, res: Response) {
-    const { name, userId, categoryId, amount } = req.body;
-    const record = {
-      id: this._generateId(),
-      name,
-      userId,
-      categoryId,
-      amount,
-      createdAt: new Date(),
-    };
-    this.records.push(record);
-    return this.created(res, record);
-  }
-
-  deleteRecord(req: Request, res: Response) {
-    const { id } = req.params;
-    const record = this.records.find((u) => u.id === Number(id));
-    if (!record) {
-      return this.send(res, 404, { message: 'Record not found' });
+  async createRecord(req: Request, res: Response, next: NextFunction) {
+    const body = req.body;
+    try {
+      const record = await this.recordsService.create(body);
+      return this.ok(res, record);
+    } catch (err) {
+      next(err);
     }
-    this.records = this.records.filter((u) => u.id !== Number(id));
-    return this.ok(res, record);
   }
 
-  getRecord(req: Request, res: Response) {
+  async deleteRecord(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
-    const record = this.records.find((u) => u.id === Number(id));
-    if (!record) {
-      return this.send(res, 404, { message: 'Record not found' });
+    try {
+      await this.recordsService.delete(Number(id));
+      return this.ok(res, { message: 'Record deleted' });
+    } catch (err) {
+      return next(err);
     }
-    return this.ok(res, record);
   }
 
-  getRecordByUserOrCategory(req: Request, res: Response) {
+  async getRecord(req: Request, res: Response, next: NextFunction) {
+    const { id } = req.params;
+    try {
+      const record = await this.recordsService.getById(Number(id));
+      return this.ok(res, record);
+    } catch (err) {
+      return next(err);
+    }
+  }
+
+  async getRecordByUserOrCategory(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
     const { userId, categoryId } = req.query;
-    if (!userId && !categoryId) {
-      return this.send(res, 400, { message: 'Missing userId or categoryId' });
-    }
-
-    const filteredRecords: any = [];
-
-    if (userId) {
-      const recordsWithUserId = this.records.filter(
-        (u) => u.userId === Number(userId) && !filteredRecords.includes(u)
+    this.loggerService.log(
+      'info',
+      `userId: ${userId}, categoryId: ${categoryId}`
+    );
+    try {
+      const records = await this.recordsService.getAll(
+        Number(userId),
+        Number(categoryId)
       );
-      filteredRecords.push(...recordsWithUserId);
+      return this.ok(res, records);
+    } catch (err) {
+      return next(err);
     }
-
-    if (categoryId) {
-      const recordsWithCategoryId = this.records.filter(
-        (u) =>
-          u.categoryId === Number(categoryId) && !filteredRecords.includes(u)
-      );
-      filteredRecords.push(...recordsWithCategoryId);
-    }
-
-    if (filteredRecords.length === 0) {
-      return this.send(res, 404, { message: 'Record not found' });
-    }
-
-    return this.ok(res, filteredRecords);
   }
 }

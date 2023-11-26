@@ -17,6 +17,8 @@ import { IUsersService } from './users/users.service.interface.js';
 import { UsersService } from './users/users.service.js';
 import { ICategoriesService } from './categories/categories.service.interface.js';
 import { CategoriesService } from './categories/categories.service.js';
+import { IRecordsService } from './records/records.service.interface.js';
+import { RecordsService } from './records/records.service.js';
 
 interface ICompositionRootReturn {
   app: App;
@@ -38,6 +40,7 @@ const appBindings = new ContainerModule((bind: interfaces.Bind) => {
   );
   bind<ICategoriesService>(TYPES.ICategoriesService).to(CategoriesService);
   bind<IRecordsController>(TYPES.IRecordsController).to(RecordsController);
+  bind<IRecordsService>(TYPES.IRecordsService).to(RecordsService);
 });
 
 const CompositionRoot = (): ICompositionRootReturn => {

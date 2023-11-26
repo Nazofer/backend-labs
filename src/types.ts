@@ -8,4 +8,5 @@ export const TYPES = {
   ICategoriesController: Symbol.for('ICategoriesController'),
   ICategoriesService: Symbol.for('ICategoriesService'),
   IRecordsController: Symbol.for('IRecordsController'),
+  IRecordsService: Symbol.for('IRecordsService'),
 };
