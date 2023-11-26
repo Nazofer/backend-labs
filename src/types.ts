@@ -6,4 +6,5 @@ export const TYPES = {
   IUsersController: Symbol.for('IUsersController'),
   IRecordsController: Symbol.for('IRecordsController'),
   ICategoriesController: Symbol.for('ICategoriesController'),
+  IUsersService: Symbol.for('IUsersService'),
 };

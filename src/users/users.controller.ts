@@ -6,15 +6,17 @@ import 'reflect-metadata';
 import { Request, Response, NextFunction } from 'express';
 import { User } from './user.interface.js';
 import { IUsersController } from './users.controller.interface.js';
+import { IUsersService } from './users.service.interface.js';
 
 @injectable()
 export class UsersController
   extends BaseController
   implements IUsersController
 {
-  users: User[] = [{ id: 1, name: 'Ryan Gosling' }];
-
-  constructor(@inject(TYPES.ILogger) private loggerService: ILogger) {
+  constructor(
+    @inject(TYPES.ILogger) private loggerService: ILogger,
+    @inject(TYPES.IUsersService) private usersService: IUsersService
+  ) {
     super(loggerService);
     this.bindRoutes([
       {
@@ -40,40 +42,43 @@ export class UsersController
     ]);
   }
 
-  _generateId() {
-    return this.users.length + 1;
-  }
-
-  createUser(req: Request, res: Response) {
-    const { name } = req.body;
-    const user = {
-      id: this._generateId(),
-      name,
-    };
-    this.users.push(user);
-    return this.created(res, user);
-  }
-
-  deleteUser(req: Request, res: Response) {
-    const { id } = req.params;
-    const user = this.users.find((u) => u.id === Number(id));
-    if (!user) {
-      return this.send(res, 404, { message: 'User not found' });
+  async createUser(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { name } = req.body;
+      const user = await this.usersService.create(name);
+      return this.created(res, user);
+    } catch (err) {
+      return next(err); // pass error to ExceptionFilter
     }
-    this.users = this.users.filter((u) => u.id !== Number(id));
-    return this.ok(res, user);
   }
 
-  getUsers(req: Request, res: Response) {
-    return this.ok(res, this.users);
-  }
-
-  getUser(req: Request, res: Response) {
+  async deleteUser(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
-    const user = this.users.find((u) => u.id === Number(id));
-    if (!user) {
-      return this.send(res, 404, { message: 'User not found' });
+    try {
+      await this.usersService.delete(Number(id));
+      return this.ok(res);
+    } catch (err) {
+      return next(err);
     }
-    return this.ok(res, user);
+  }
+
+  async getUsers(req: Request, res: Response, next: NextFunction) {
+    try {
+      const users = await this.usersService.getAll();
+
+      return this.ok(res, users);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async getUser(req: Request, res: Response, next: NextFunction) {
+    const { id } = req.params;
+    try {
+      const user = await this.usersService.get(Number(id));
+      return this.ok(res, user);
+    } catch (err) {
+      return next(err);
+    }
   }
 }

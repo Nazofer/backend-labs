@@ -13,6 +13,8 @@ import { IExceptionFilter } from './errors/exception.filter.interface.js';
 import { ExceptionFilter } from './errors/exception.filter.js';
 import { IHealthCheckController } from './healthcheck/healthcheck.controller.interface.js';
 import { HealthCheckController } from './healthcheck/healthcheck.controller.js';
+import { IUsersService } from './users/users.service.interface.js';
+import { UsersService } from './users/users.service.js';
 
 export interface ICompositionRootReturn {
   app: App;
@@ -26,15 +28,12 @@ export const appBindings = new ContainerModule((bind: interfaces.Bind) => {
   bind<IHealthCheckController>(TYPES.IHealthCheckController).to(
     HealthCheckController
   );
-  bind<IUsersController>(TYPES.IUsersController)
-    .to(UsersController)
-    .inSingletonScope();
-  bind<IRecordsController>(TYPES.IRecordsController)
-    .to(RecordsController)
-    .inSingletonScope();
-  bind<ICategoriesController>(TYPES.ICategoriesController)
-    .to(CategoriesController)
-    .inSingletonScope();
+  bind<IUsersController>(TYPES.IUsersController).to(UsersController);
+  bind<IUsersService>(TYPES.IUsersService).to(UsersService);
+  bind<IRecordsController>(TYPES.IRecordsController).to(RecordsController);
+  bind<ICategoriesController>(TYPES.ICategoriesController).to(
+    CategoriesController
+  );
 });
 
 const CompositionRoot = (): ICompositionRootReturn => {

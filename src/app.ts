@@ -10,6 +10,7 @@ import { IHealthCheckController } from './healthcheck/healthcheck.controller.int
 import { IUsersController } from './users/users.controller.interface';
 import { IRecordsController } from './records/records.controller.interface';
 import { ICategoriesController } from './categories/categories.controller.interface';
+import { AppDataSource } from './data-source.js';
 
 @injectable()
 export class App {
@@ -51,6 +52,13 @@ export class App {
     this.useMiddlewares();
     this.useRoutes();
     this.useExceptionFilters();
+    AppDataSource.initialize()
+      .then(() => {
+        this.logger.log('Database connected');
+      })
+      .catch((err) => {
+        this.logger.error(err);
+      });
     this.server = this.app.listen(this.port);
     this.logger.log(`Server running at http://localhost:${this.port}`);
   }
