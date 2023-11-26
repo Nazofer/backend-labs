@@ -4,7 +4,6 @@ import { TYPES } from '../types.js';
 import { ILogger } from '../logger/logger.interface.js';
 import 'reflect-metadata';
 import { Request, Response, NextFunction } from 'express';
-import { Category } from './category.interface.js';
 import { ICategoriesController } from './categories.controller.interface.js';
 
 @injectable()
@@ -12,7 +11,7 @@ export class CategoriesController
   extends BaseController
   implements ICategoriesController
 {
-  categories: Category[] = [
+  categories = [
     { id: 1, name: 'Category 1' },
     { id: 2, name: 'Category 2' },
   ];

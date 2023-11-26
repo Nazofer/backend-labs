@@ -4,7 +4,6 @@ import { TYPES } from '../types.js';
 import { ILogger } from '../logger/logger.interface.js';
 import 'reflect-metadata';
 import { Request, Response, NextFunction } from 'express';
-import { Record } from './record.interface.js';
 import { IRecordsController } from './records.controller.interface.js';
 
 @injectable()
@@ -12,7 +11,7 @@ export class RecordsController
   extends BaseController
   implements IRecordsController
 {
-  records: Record[] = [
+  records = [
     {
       id: 1,
       userId: 1,
@@ -91,7 +90,7 @@ export class RecordsController
       return this.send(res, 400, { message: 'Missing userId or categoryId' });
     }
 
-    const filteredRecords: Record[] = [];
+    const filteredRecords: any = [];
 
     if (userId) {
       const recordsWithUserId = this.records.filter(

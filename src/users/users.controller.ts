@@ -4,7 +4,6 @@ import { TYPES } from '../types.js';
 import { ILogger } from '../logger/logger.interface.js';
 import 'reflect-metadata';
 import { Request, Response, NextFunction } from 'express';
-import { User } from './user.interface.js';
 import { IUsersController } from './users.controller.interface.js';
 import { IUsersService } from './users.service.interface.js';
 
