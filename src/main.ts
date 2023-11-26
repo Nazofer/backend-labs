@@ -15,13 +15,16 @@ import { IHealthCheckController } from './healthcheck/healthcheck.controller.int
 import { HealthCheckController } from './healthcheck/healthcheck.controller.js';
 import { IUsersService } from './users/users.service.interface.js';
 import { UsersService } from './users/users.service.js';
+import { ICategoriesService } from './categories/categories.service.interface.js';
+import { CategoriesService } from './categories/categories.service.js';
 
-export interface ICompositionRootReturn {
+interface ICompositionRootReturn {
   app: App;
   appContainer: Container;
 }
 
-export const appBindings = new ContainerModule((bind: interfaces.Bind) => {
+// DI container binding interfaces to their implementations
+const appBindings = new ContainerModule((bind: interfaces.Bind) => {
   bind<App>(TYPES.Application).to(App);
   bind<ILogger>(TYPES.ILogger).to(LoggerService).inSingletonScope();
   bind<IExceptionFilter>(TYPES.IExceptionFilter).to(ExceptionFilter);
@@ -30,10 +33,11 @@ export const appBindings = new ContainerModule((bind: interfaces.Bind) => {
   );
   bind<IUsersController>(TYPES.IUsersController).to(UsersController);
   bind<IUsersService>(TYPES.IUsersService).to(UsersService);
-  bind<IRecordsController>(TYPES.IRecordsController).to(RecordsController);
   bind<ICategoriesController>(TYPES.ICategoriesController).to(
     CategoriesController
   );
+  bind<ICategoriesService>(TYPES.ICategoriesService).to(CategoriesService);
+  bind<IRecordsController>(TYPES.IRecordsController).to(RecordsController);
 });
 
 const CompositionRoot = (): ICompositionRootReturn => {

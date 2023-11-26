@@ -13,17 +13,7 @@ export class UsersService implements IUsersService {
     this.repo = AppDataSource.getRepository(User);
   }
 
-  create(name: string): Promise<User> {
-    return this.repo.save({ name });
-  }
-
-  async delete(id: number): Promise<void> {
-    const user = await this.get(id);
-    if (!user) throw new HTTPError(404, `User with id ${id} not found`);
-    await this.repo.remove(user);
-  }
-
-  async get(id: number): Promise<User> {
+  async getById(id: number): Promise<User> {
     const user = await this.repo.findOne({ where: { id } });
     if (!user) {
       throw new HTTPError(404, `User with id ${id} not found`);
@@ -33,5 +23,20 @@ export class UsersService implements IUsersService {
 
   async getAll(): Promise<User[]> {
     return this.repo.find();
+  }
+
+  async create(name: string): Promise<User> {
+    const user = this.repo.create({ name });
+    return await this.repo.save(user);
+  }
+
+  async update(id: number, user: User): Promise<User> {
+    const oldUser = await this.getById(id);
+    return this.repo.save({ ...oldUser, ...user });
+  }
+
+  async delete(id: number): Promise<void> {
+    const oldUser = await this.getById(id);
+    await this.repo.remove(oldUser);
   }
 }

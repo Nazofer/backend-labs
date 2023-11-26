@@ -5,7 +5,9 @@ export interface IUsersService {
 
   delete: (id: number) => Promise<void>;
 
-  get: (id: number) => Promise<User>;
+  getById: (id: number) => Promise<User>;
 
   getAll: () => Promise<User[]>;
+
+  update: (id: number, user: User) => Promise<User>;
 }

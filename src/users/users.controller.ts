@@ -38,6 +38,11 @@ export class UsersController
         path: '/:id',
         func: this.getUser,
       },
+      {
+        method: 'put',
+        path: '/:id',
+        func: this.updateUser,
+      },
     ]);
   }
 
@@ -74,8 +79,19 @@ export class UsersController
   async getUser(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
     try {
-      const user = await this.usersService.get(Number(id));
+      const user = await this.usersService.getById(Number(id));
       return this.ok(res, user);
+    } catch (err) {
+      return next(err);
+    }
+  }
+
+  async updateUser(req: Request, res: Response, next: NextFunction) {
+    const { id } = req.params;
+    const user = req.body;
+    try {
+      const updatedUser = await this.usersService.update(Number(id), user);
+      return this.ok(res, updatedUser);
     } catch (err) {
       return next(err);
     }

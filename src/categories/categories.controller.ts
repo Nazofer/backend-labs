@@ -5,18 +5,18 @@ import { ILogger } from '../logger/logger.interface.js';
 import 'reflect-metadata';
 import { Request, Response, NextFunction } from 'express';
 import { ICategoriesController } from './categories.controller.interface.js';
+import { ICategoriesService } from './categories.service.interface.js';
 
 @injectable()
 export class CategoriesController
   extends BaseController
   implements ICategoriesController
 {
-  categories = [
-    { id: 1, name: 'Category 1' },
-    { id: 2, name: 'Category 2' },
-  ];
-
-  constructor(@inject(TYPES.ILogger) private loggerService: ILogger) {
+  constructor(
+    @inject(TYPES.ILogger) private loggerService: ILogger,
+    @inject(TYPES.ICategoriesService)
+    private categoriesService: ICategoriesService
+  ) {
     super(loggerService);
     this.bindRoutes([
       {
@@ -39,43 +39,60 @@ export class CategoriesController
         path: '/:id',
         func: this.getCategory,
       },
+      {
+        method: 'put',
+        path: '/:id',
+        func: this.updateCategory,
+      },
     ]);
   }
 
-  _generateId() {
-    return this.categories.length + 1;
-  }
-
-  createCategory(req: Request, res: Response) {
+  async createCategory(req: Request, res: Response, next: NextFunction) {
     const { name } = req.body;
-    const category = {
-      id: this._generateId(),
-      name,
-    };
-    this.categories.push(category);
-    return this.created(res, category);
-  }
-
-  deleteCategory(req: Request, res: Response) {
-    const { id } = req.params;
-    const category = this.categories.find((u) => u.id === Number(id));
-    if (!category) {
-      return this.send(res, 404, { message: 'Category not found' });
+    try {
+      const category = await this.categoriesService.create(name);
+      return this.created(res, category);
+    } catch (err) {
+      return next(err); // pass error to ExceptionFilter
     }
-    this.categories = this.categories.filter((u) => u.id !== Number(id));
-    return this.ok(res, category);
   }
 
-  getCategories(req: Request, res: Response) {
-    return this.ok(res, this.categories);
-  }
-
-  getCategory(req: Request, res: Response) {
+  async deleteCategory(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
-    const category = this.categories.find((u) => u.id === Number(id));
-    if (!category) {
-      return this.send(res, 404, { message: 'Category not found' });
+    try {
+      await this.categoriesService.delete(Number(id));
+      return this.ok(res);
+    } catch (err) {
+      return next(err);
     }
-    return this.ok(res, category);
+  }
+
+  async getCategories(req: Request, res: Response) {
+    const categories = await this.categoriesService.getAll();
+    return this.ok(res, categories);
+  }
+
+  async getCategory(req: Request, res: Response, next: NextFunction) {
+    const { id } = req.params;
+    try {
+      const category = await this.categoriesService.getById(Number(id));
+      return this.ok(res, category);
+    } catch (err) {
+      return next(err);
+    }
+  }
+
+  async updateCategory(req: Request, res: Response, next: NextFunction) {
+    const { id } = req.params;
+    const category = req.body;
+    try {
+      const updatedCategory = await this.categoriesService.update(
+        Number(id),
+        category
+      );
+      return this.ok(res, updatedCategory);
+    } catch (err) {
+      return next(err);
+    }
   }
 }
