@@ -37,8 +37,6 @@ export class RecordsService implements IRecordsService {
     }
 
     const records = await query.getMany();
-    console.log(records);
-
     return records;
   }
 

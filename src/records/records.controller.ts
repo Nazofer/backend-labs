@@ -77,10 +77,6 @@ export class RecordsController
     next: NextFunction
   ) {
     const { userId, categoryId } = req.query;
-    this.loggerService.log(
-      'info',
-      `userId: ${userId}, categoryId: ${categoryId}`
-    );
     try {
       const records = await this.recordsService.getAll(
         Number(userId),
