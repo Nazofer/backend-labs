@@ -6,6 +6,9 @@ import 'reflect-metadata';
 import { Request, Response, NextFunction } from 'express';
 import { IUsersController } from './users.controller.interface.js';
 import { IUsersService } from './users.service.interface.js';
+import { CreateUserDto } from './dtos/create-user.dto.js';
+import { ValidateMiddleware } from '../common/validate.middleware.js';
+import { UpdateUserDto } from './dtos/update-user.dto.js';
 
 @injectable()
 export class UsersController
@@ -22,6 +25,7 @@ export class UsersController
         method: 'post',
         path: '/',
         func: this.createUser,
+        middlewares: [new ValidateMiddleware(CreateUserDto)],
       },
       {
         method: 'delete',
@@ -39,11 +43,27 @@ export class UsersController
         func: this.getUser,
       },
       {
+        method: 'get',
+        path: '/:id/balance',
+        func: this.getUserBalance,
+      },
+      {
         method: 'put',
         path: '/:id',
         func: this.updateUser,
+        middlewares: [new ValidateMiddleware(UpdateUserDto)],
       },
     ]);
+  }
+
+  async getUserBalance(req: Request, res: Response, next: NextFunction) {
+    const { id } = req.params;
+    try {
+      const balance = await this.usersService.getUserBalance(Number(id));
+      return this.ok(res, { balance });
+    } catch (err) {
+      return next(err);
+    }
   }
 
   async createUser(req: Request, res: Response, next: NextFunction) {

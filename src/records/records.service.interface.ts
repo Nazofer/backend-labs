@@ -5,4 +5,5 @@ export interface IRecordsService {
   getAll: (userId: number, categoryId: number) => Promise<Record[]>;
   create: (record: Record) => Promise<Record>;
   delete: (id: number) => Promise<void>;
+  getUserBalance: (userId: number) => Promise<number>;
 }

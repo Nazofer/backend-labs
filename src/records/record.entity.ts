@@ -1,4 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { User } from '../users/user.entity.js';
 
 @Entity()
 export class Record {
@@ -7,6 +14,10 @@ export class Record {
 
   @Column({ type: 'integer' })
   userId: number;
+
+  @ManyToOne(() => User) // Establishing the many-to-one relationship
+  @JoinColumn({ name: 'userId' }) // Specifying the join column
+  user: User;
 
   @Column({ type: 'integer' })
   categoryId: number;

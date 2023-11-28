@@ -6,6 +6,8 @@ import 'reflect-metadata';
 import { Request, Response, NextFunction } from 'express';
 import { IRecordsController } from './records.controller.interface.js';
 import { IRecordsService } from './records.service.interface.js';
+import { CreateRecordDto } from './dtos/create-record.dto.js';
+import { ValidateMiddleware } from '../common/validate.middleware.js';
 
 @injectable()
 export class RecordsController
@@ -22,6 +24,7 @@ export class RecordsController
         method: 'post',
         path: '/',
         func: this.createRecord,
+        middlewares: [new ValidateMiddleware(CreateRecordDto)],
       },
       {
         method: 'delete',

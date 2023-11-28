@@ -13,6 +13,16 @@ export class RecordsService implements IRecordsService {
     this.repo = AppDataSource.getRepository(Record);
   }
 
+  async getUserBalance(userId: number): Promise<number> {
+    const { sum } = await this.repo
+      .createQueryBuilder('record')
+      .select('CAST(SUM(record.amount) AS INTEGER)', 'sum')
+      .where('record.userId = :userId', { userId })
+      .getRawOne();
+
+    return parseInt(sum, 10) || 0;
+  }
+
   async getById(id: number): Promise<Record> {
     const record = await this.repo.findOne({ where: { id } });
     if (!record) {
@@ -43,7 +53,16 @@ export class RecordsService implements IRecordsService {
   async create(record: Record): Promise<Record> {
     const date = new Date();
     record.createdAt = date;
-    const newRecord = await this.repo.create(record);
+
+    if (record.amount < 0) {
+      const sum = await this.getUserBalance(record.userId);
+
+      if (sum + record.amount < 0) {
+        throw new HTTPError(400, 'Not enough balance');
+      }
+    }
+
+    const newRecord = this.repo.create(record);
     return await this.repo.save(newRecord);
   }
 

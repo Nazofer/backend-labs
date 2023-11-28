@@ -26,7 +26,11 @@ export class CategoriesService implements ICategoriesService {
   }
 
   async create(name: string): Promise<Category> {
-    const category = await this.repo.create({ name });
+    const existingCategory = await this.repo.findOne({ where: { name } });
+    if (existingCategory) {
+      throw new HTTPError(400, `Category with name ${name} already exists`);
+    }
+    const category = this.repo.create({ name });
     return await this.repo.save(category);
   }
 

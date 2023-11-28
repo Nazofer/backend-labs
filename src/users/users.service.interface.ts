@@ -10,4 +10,6 @@ export interface IUsersService {
   getAll: () => Promise<User[]>;
 
   update: (id: number, user: User) => Promise<User>;
+
+  getUserBalance: (userId: number) => Promise<number>;
 }

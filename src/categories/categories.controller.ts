@@ -6,6 +6,9 @@ import 'reflect-metadata';
 import { Request, Response, NextFunction } from 'express';
 import { ICategoriesController } from './categories.controller.interface.js';
 import { ICategoriesService } from './categories.service.interface.js';
+import { ValidateMiddleware } from '../common/validate.middleware.js';
+import { CreateCategoryDto } from './dtos/create-category.dto.js';
+import { UpdateCategoryDto } from './dtos/update-category.dto.js';
 
 @injectable()
 export class CategoriesController
@@ -23,6 +26,7 @@ export class CategoriesController
         method: 'post',
         path: '/',
         func: this.createCategory,
+        middlewares: [new ValidateMiddleware(CreateCategoryDto)],
       },
       {
         method: 'delete',
@@ -43,6 +47,7 @@ export class CategoriesController
         method: 'put',
         path: '/:id',
         func: this.updateCategory,
+        middlewares: [new ValidateMiddleware(UpdateCategoryDto)],
       },
     ]);
   }
