@@ -11,7 +11,7 @@ import { IUsersController } from './users/users.controller.interface';
 import { IRecordsController } from './records/records.controller.interface';
 import { ICategoriesController } from './categories/categories.controller.interface';
 import { AppDataSource } from './data-source.js';
-
+import 'dotenv/config';
 @injectable()
 export class App {
   app: Express;
@@ -30,7 +30,7 @@ export class App {
     private categoriesController: ICategoriesController
   ) {
     this.app = express();
-    this.port = 8000;
+    this.port = Number(process.env.PORT || '3000');
   }
 
   useMiddlewares(): void {
