@@ -1,6 +1,6 @@
 import { Repository } from 'typeorm';
 import { Category } from './category.entity.js';
-import { AppDataSource } from '../data-source.js';
+import { AppDataSource } from '../../data-source.js';
 import { HTTPError } from '../errors/http-error.class.js';
 import { ICategoriesService } from './categories.service.interface';
 import { injectable } from 'inversify';

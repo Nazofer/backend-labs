@@ -1,6 +1,6 @@
 import { Repository } from 'typeorm';
 import { Record } from './record.entity.js';
-import { AppDataSource } from '../data-source.js';
+import { AppDataSource } from '../../data-source.js';
 import { HTTPError } from '../errors/http-error.class.js';
 import { injectable } from 'inversify';
 import 'reflect-metadata';

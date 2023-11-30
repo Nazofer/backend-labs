@@ -10,7 +10,7 @@ import { IHealthCheckController } from './healthcheck/healthcheck.controller.int
 import { IUsersController } from './users/users.controller.interface';
 import { IRecordsController } from './records/records.controller.interface';
 import { ICategoriesController } from './categories/categories.controller.interface';
-import { AppDataSource } from './data-source.js';
+import { AppDataSource } from '../data-source.js';
 import 'dotenv/config';
 import { AuthMiddleware } from './common/auth.middleware.js';
 @injectable()

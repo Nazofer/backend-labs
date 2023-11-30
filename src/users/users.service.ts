@@ -1,5 +1,5 @@
 import { Repository } from 'typeorm';
-import { AppDataSource } from '../data-source.js';
+import { AppDataSource } from '../../data-source.js';
 import { User } from './user.entity.js';
 import { inject, injectable } from 'inversify';
 import 'reflect-metadata';

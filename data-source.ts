@@ -1,7 +1,4 @@
 import { DataSource } from 'typeorm';
-import { User } from './users/user.entity.js';
-import { Category } from './categories/category.entity.js';
-import { Record } from './records/record.entity.js';
 import 'dotenv/config';
 
 export const AppDataSource = new DataSource({
@@ -12,9 +9,7 @@ export const AppDataSource = new DataSource({
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  synchronize: true,
-  // logging: true,
-  entities: [User, Category, Record],
-  subscribers: [],
-  migrations: [],
+  entities: ['./src/**/*.entity{.ts,.js}'],
+  migrations: ['./db/migrations/*{.ts,.js}'],
+  migrationsRun: true,
 });
