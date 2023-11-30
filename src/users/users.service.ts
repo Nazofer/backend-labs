@@ -7,6 +7,7 @@ import { IUsersService } from './users.service.interface';
 import { HTTPError } from '../errors/http-error.class.js';
 import { IRecordsService } from '../records/records.service.interface.js';
 import { TYPES } from '../types.js';
+import { UserRegisterDto } from './dtos/user-register.dto.js';
 
 @injectable()
 export class UsersService implements IUsersService {
@@ -29,16 +30,17 @@ export class UsersService implements IUsersService {
     return user;
   }
 
+  async getByEmail(email: string): Promise<User | null> {
+    const user = await this.repo.findOne({ where: { email } });
+    return user;
+  }
+
   async getAll(): Promise<User[]> {
     return this.repo.find();
   }
 
-  async create(name: string): Promise<User> {
-    const existingUser = await this.repo.findOne({ where: { name } });
-    if (existingUser) {
-      throw new HTTPError(400, `User with name ${name} already exists`);
-    }
-    const user = this.repo.create({ name });
+  async create(data: UserRegisterDto): Promise<User> {
+    const user = this.repo.create(data);
     return await this.repo.save(user);
   }
 

@@ -6,9 +6,12 @@ import 'reflect-metadata';
 import { Request, Response, NextFunction } from 'express';
 import { IUsersController } from './users.controller.interface.js';
 import { IUsersService } from './users.service.interface.js';
-import { CreateUserDto } from './dtos/create-user.dto.js';
+import { UserRegisterDto } from './dtos/user-register.dto.js';
 import { ValidateMiddleware } from '../common/validate.middleware.js';
 import { UpdateUserDto } from './dtos/update-user.dto.js';
+import { IAuthService } from './auth.service.interface.js';
+import { UserLoginDto } from './dtos/user-login.dto.js';
+import { AuthGuard } from '../common/auth.guard.js';
 
 @injectable()
 export class UsersController
@@ -17,62 +20,73 @@ export class UsersController
 {
   constructor(
     @inject(TYPES.ILogger) private loggerService: ILogger,
-    @inject(TYPES.IUsersService) private usersService: IUsersService
+    @inject(TYPES.IUsersService) private usersService: IUsersService,
+    @inject(TYPES.IAuthService) private authService: IAuthService
   ) {
     super(loggerService);
     this.bindRoutes([
       {
         method: 'post',
         path: '/',
-        func: this.createUser,
-        middlewares: [new ValidateMiddleware(CreateUserDto)],
+        func: this.register,
+        middlewares: [new ValidateMiddleware(UserRegisterDto)],
+      },
+      {
+        method: 'post',
+        path: '/login',
+        func: this.login,
+        middlewares: [new ValidateMiddleware(UserLoginDto)],
       },
       {
         method: 'delete',
         path: '/:id',
         func: this.deleteUser,
+        middlewares: [new AuthGuard()],
       },
       {
         method: 'get',
         path: '/',
         func: this.getUsers,
+        middlewares: [new AuthGuard()],
       },
       {
         method: 'get',
         path: '/:id',
         func: this.getUser,
+        middlewares: [new AuthGuard()],
       },
       {
         method: 'get',
         path: '/:id/balance',
         func: this.getUserBalance,
+        middlewares: [new AuthGuard()],
       },
       {
         method: 'put',
         path: '/:id',
         func: this.updateUser,
-        middlewares: [new ValidateMiddleware(UpdateUserDto)],
+        middlewares: [new ValidateMiddleware(UpdateUserDto), new AuthGuard()],
       },
     ]);
   }
 
-  async getUserBalance(req: Request, res: Response, next: NextFunction) {
-    const { id } = req.params;
+  async register(req: Request, res: Response, next: NextFunction) {
     try {
-      const balance = await this.usersService.getUserBalance(Number(id));
-      return this.ok(res, { balance });
-    } catch (err) {
-      return next(err);
-    }
-  }
-
-  async createUser(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { name } = req.body;
-      const user = await this.usersService.create(name);
+      const { email, password, name } = req.body;
+      const user = await this.authService.register(email, password, name);
       return this.created(res, user);
     } catch (err) {
       return next(err); // pass error to ExceptionFilter
+    }
+  }
+
+  async login(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { email, password } = req.body;
+      const token = await this.authService.login(email, password);
+      return this.ok(res, { token });
+    } catch (err) {
+      return next(err);
     }
   }
 
@@ -101,6 +115,16 @@ export class UsersController
     try {
       const user = await this.usersService.getById(Number(id));
       return this.ok(res, user);
+    } catch (err) {
+      return next(err);
+    }
+  }
+
+  async getUserBalance(req: Request, res: Response, next: NextFunction) {
+    const { id } = req.params;
+    try {
+      const balance = await this.usersService.getUserBalance(Number(id));
+      return this.ok(res, { balance });
     } catch (err) {
       return next(err);
     }

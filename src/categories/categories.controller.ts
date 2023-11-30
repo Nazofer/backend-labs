@@ -9,6 +9,7 @@ import { ICategoriesService } from './categories.service.interface.js';
 import { ValidateMiddleware } from '../common/validate.middleware.js';
 import { CreateCategoryDto } from './dtos/create-category.dto.js';
 import { UpdateCategoryDto } from './dtos/update-category.dto.js';
+import { AuthGuard } from '../common/auth.guard.js';
 
 @injectable()
 export class CategoriesController
@@ -26,28 +27,37 @@ export class CategoriesController
         method: 'post',
         path: '/',
         func: this.createCategory,
-        middlewares: [new ValidateMiddleware(CreateCategoryDto)],
+        middlewares: [
+          new ValidateMiddleware(CreateCategoryDto),
+          new AuthGuard(),
+        ],
       },
       {
         method: 'delete',
         path: '/:id',
         func: this.deleteCategory,
+        middlewares: [new AuthGuard()],
       },
       {
         method: 'get',
         path: '/',
         func: this.getCategories,
+        middlewares: [new AuthGuard()],
       },
       {
         method: 'get',
         path: '/:id',
         func: this.getCategory,
+        middlewares: [new AuthGuard()],
       },
       {
         method: 'put',
         path: '/:id',
         func: this.updateCategory,
-        middlewares: [new ValidateMiddleware(UpdateCategoryDto)],
+        middlewares: [
+          new ValidateMiddleware(UpdateCategoryDto),
+          new AuthGuard(),
+        ],
       },
     ]);
   }

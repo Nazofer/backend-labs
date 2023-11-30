@@ -8,6 +8,7 @@ import { IRecordsController } from './records.controller.interface.js';
 import { IRecordsService } from './records.service.interface.js';
 import { CreateRecordDto } from './dtos/create-record.dto.js';
 import { ValidateMiddleware } from '../common/validate.middleware.js';
+import { AuthGuard } from '../common/auth.guard.js';
 
 @injectable()
 export class RecordsController
@@ -24,22 +25,25 @@ export class RecordsController
         method: 'post',
         path: '/',
         func: this.createRecord,
-        middlewares: [new ValidateMiddleware(CreateRecordDto)],
+        middlewares: [new ValidateMiddleware(CreateRecordDto), new AuthGuard()],
       },
       {
         method: 'delete',
         path: '/:id',
         func: this.deleteRecord,
+        middlewares: [new AuthGuard()],
       },
       {
         method: 'get',
         path: '/:id',
         func: this.getRecord,
+        middlewares: [new AuthGuard()],
       },
       {
         method: 'get',
         path: '/',
         func: this.getRecordByUserOrCategory,
+        middlewares: [new AuthGuard()],
       },
     ]);
   }

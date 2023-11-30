@@ -5,6 +5,7 @@ import { TYPES } from '../types.js';
 import { ILogger } from '../logger/logger.interface';
 import { Request, Response } from 'express';
 import { IHealthCheckController } from './healthcheck.controller.interface';
+import { AuthGuard } from '../common/auth.guard.js';
 
 @injectable()
 export class HealthCheckController
@@ -18,6 +19,7 @@ export class HealthCheckController
         method: 'get',
         path: '/',
         func: this.getHealthCheck,
+        middlewares: [new AuthGuard()],
       },
     ]);
   }

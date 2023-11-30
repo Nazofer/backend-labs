@@ -1,11 +1,14 @@
+import { UserRegisterDto } from './dtos/user-register.dto';
 import { User } from './user.entity';
 
 export interface IUsersService {
-  create: (name: string) => Promise<User>;
+  create: (data: UserRegisterDto) => Promise<User>;
 
   delete: (id: number) => Promise<void>;
 
   getById: (id: number) => Promise<User>;
+
+  getByEmail: (email: string) => Promise<User | null>;
 
   getAll: () => Promise<User[]>;
 

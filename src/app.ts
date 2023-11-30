@@ -12,6 +12,7 @@ import { IRecordsController } from './records/records.controller.interface';
 import { ICategoriesController } from './categories/categories.controller.interface';
 import { AppDataSource } from './data-source.js';
 import 'dotenv/config';
+import { AuthMiddleware } from './common/auth.middleware.js';
 @injectable()
 export class App {
   app: Express;
@@ -35,6 +36,8 @@ export class App {
 
   useMiddlewares(): void {
     this.app.use(bodyParser.json());
+    const authMiddleware = new AuthMiddleware();
+    this.app.use(authMiddleware.execute.bind(authMiddleware));
   }
 
   useRoutes(): void {

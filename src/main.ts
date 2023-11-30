@@ -15,6 +15,8 @@ import { IHealthCheckController } from './healthcheck/healthcheck.controller.int
 import { HealthCheckController } from './healthcheck/healthcheck.controller.js';
 import { IUsersService } from './users/users.service.interface.js';
 import { UsersService } from './users/users.service.js';
+import { IAuthService } from './users/auth.service.interface.js';
+import { AuthService } from './users/auth.service.js';
 import { ICategoriesService } from './categories/categories.service.interface.js';
 import { CategoriesService } from './categories/categories.service.js';
 import { IRecordsService } from './records/records.service.interface.js';
@@ -35,6 +37,7 @@ const appBindings = new ContainerModule((bind: interfaces.Bind) => {
   );
   bind<IUsersController>(TYPES.IUsersController).to(UsersController);
   bind<IUsersService>(TYPES.IUsersService).to(UsersService);
+  bind<IAuthService>(TYPES.IAuthService).to(AuthService);
   bind<ICategoriesController>(TYPES.ICategoriesController).to(
     CategoriesController
   );
