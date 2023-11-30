@@ -37,7 +37,7 @@ export class AuthService implements IAuthService {
     email: string,
     password: string,
     name: string
-  ): Promise<{ name: string; email: string; token: string }> {
+  ): Promise<string> {
     const user = await this.usersService.getByEmail(email);
     if (user) {
       throw new HTTPError(422, 'User already exists');
@@ -48,7 +48,7 @@ export class AuthService implements IAuthService {
     await this.usersService.create({ name, email, password: hashedPassword });
 
     const token = await this.signJWT(email);
-    return { name, email, token };
+    return token;
   }
 
   private signJWT(email: string): Promise<string> {
