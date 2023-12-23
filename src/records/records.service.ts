@@ -24,10 +24,12 @@ export class RecordsService implements IRecordsService {
     return parseInt(sum, 10) || 0;
   }
 
-  async getById(id: number): Promise<Record> {
+  async getById(id: number, userId: number): Promise<Record> {
     const record = await this.repo.findOne({ where: { id } });
     if (!record) {
       throw new HTTPError(404, `Record with id ${id} not found`);
+    } else if (record.userId !== userId) {
+      throw new HTTPError(403, 'Forbidden');
     }
     return record;
   }
@@ -40,11 +42,11 @@ export class RecordsService implements IRecordsService {
     const query = this.repo.createQueryBuilder('record');
 
     if (userId) {
-      query.orWhere('record.userId = :userId', { userId });
+      query.where('record.userId = :userId', { userId });
     }
 
     if (categoryId) {
-      query.orWhere('record.categoryId = :categoryId', { categoryId });
+      query.andWhere('record.categoryId = :categoryId', { categoryId });
     }
 
     const records = await query.getMany();
@@ -65,11 +67,7 @@ export class RecordsService implements IRecordsService {
   }
 
   async delete(id: number, userId: number): Promise<void> {
-    const record = await this.getById(id);
-
-    if (record.userId !== userId) {
-      throw new HTTPError(403, 'Forbidden');
-    }
+    const record = await this.getById(id, userId);
 
     await this.repo.remove(record);
   }

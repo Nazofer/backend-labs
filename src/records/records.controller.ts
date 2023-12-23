@@ -71,8 +71,9 @@ export class RecordsController
 
   async getRecord(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
+    const { id: userId } = req; // from auth middleware
     try {
-      const record = await this.recordsService.getById(Number(id));
+      const record = await this.recordsService.getById(Number(id), userId!);
       return this.ok(res, record);
     } catch (err) {
       return next(err);
@@ -84,7 +85,8 @@ export class RecordsController
     res: Response,
     next: NextFunction
   ) {
-    const { userId, categoryId } = req.query;
+    const { categoryId } = req.query;
+    const { id: userId } = req; // from auth middleware
     try {
       const records = await this.recordsService.getAll(
         Number(userId),
