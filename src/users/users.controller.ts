@@ -52,6 +52,12 @@ export class UsersController
       },
       {
         method: 'get',
+        path: '/whoami/',
+        func: this.whoami,
+        middlewares: [new AuthGuard()],
+      },
+      {
+        method: 'get',
         path: '/:id',
         func: this.getUser,
         middlewares: [new AuthGuard()],
@@ -112,6 +118,18 @@ export class UsersController
       return this.ok(res, users);
     } catch (err) {
       next(err);
+    }
+  }
+
+  async whoami(req: Request, res: Response, next: NextFunction) {
+    const id = req.id; // from auth middleware
+
+    try {
+      const user = await this.usersService.getById(id!);
+
+      return this.ok(res, user);
+    } catch (err) {
+      return next(err);
     }
   }
 
