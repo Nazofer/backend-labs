@@ -5,6 +5,7 @@ import { HTTPError } from '../errors/http-error.class.js';
 import { injectable } from 'inversify';
 import 'reflect-metadata';
 import { IRecordsService } from './records.service.interface.js';
+import { CreateRecordDto } from './dtos/create-record.dto.js';
 
 @injectable()
 export class RecordsService implements IRecordsService {
@@ -50,24 +51,26 @@ export class RecordsService implements IRecordsService {
     return records;
   }
 
-  async create(record: Record): Promise<Record> {
-    const date = new Date();
-    record.createdAt = date;
-
+  async create(record: CreateRecordDto, userId: number): Promise<Record> {
     if (record.amount < 0) {
-      const sum = await this.getUserBalance(record.userId);
+      const sum = await this.getUserBalance(userId);
 
       if (sum + record.amount < 0) {
         throw new HTTPError(400, 'Not enough balance');
       }
     }
 
-    const newRecord = this.repo.create(record);
+    const newRecord = this.repo.create({ ...record, userId });
     return await this.repo.save(newRecord);
   }
 
-  async delete(id: number): Promise<void> {
+  async delete(id: number, userId: number): Promise<void> {
     const record = await this.getById(id);
+
+    if (record.userId !== userId) {
+      throw new HTTPError(403, 'Forbidden');
+    }
+
     await this.repo.remove(record);
   }
 }

@@ -29,7 +29,7 @@ export class AuthService implements IAuthService {
     if (!isPasswordCorrect) {
       throw new HTTPError(401, 'Password is incorrect');
     }
-    const token = await this.signJWT(email);
+    const token = await this.signJWT(existedUser.id);
     return token;
   }
 
@@ -45,18 +45,22 @@ export class AuthService implements IAuthService {
 
     const hashedPassword = await bcript.hash(password, this.salt);
 
-    await this.usersService.create({ name, email, password: hashedPassword });
+    const newUser = await this.usersService.create({
+      name,
+      email,
+      password: hashedPassword,
+    });
 
-    const token = await this.signJWT(email);
+    const token = await this.signJWT(newUser.id);
     return token;
   }
 
-  private signJWT(email: string): Promise<string> {
+  private signJWT(id: number): Promise<string> {
     return new Promise((resolve, reject) => {
       jsonwebtoken.sign(
-        { email, iat: Math.floor(Date.now() / 1000) },
+        { id, iat: Math.floor(Date.now() / 1000) },
         this.secret,
-        { algorithm: 'HS256', expiresIn: '7d' },
+        { expiresIn: '7d' },
         (err, token) => {
           if (err) {
             reject(err);

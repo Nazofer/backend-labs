@@ -12,12 +12,13 @@ export class Record {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @ManyToOne(() => User, (user) => user.id)
   @Column({ type: 'integer' })
   userId: number;
 
-  @ManyToOne(() => User) // Establishing the many-to-one relationship
-  @JoinColumn({ name: 'userId' }) // Specifying the join column
-  user: User;
+  // @ManyToOne(() => User, (user) => user.records) // Establishing the many-to-one relationship
+  // @JoinColumn({ name: 'userId' }) // Specifying the join column
+  // user: User;
 
   @Column({ type: 'integer' })
   categoryId: number;

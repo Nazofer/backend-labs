@@ -12,6 +12,7 @@ import { UpdateUserDto } from './dtos/update-user.dto.js';
 import { IAuthService } from './auth.service.interface.js';
 import { UserLoginDto } from './dtos/user-login.dto.js';
 import { AuthGuard } from '../common/auth.guard.js';
+import { CanPerformGuard } from '../common/canPerform.guard.js';
 
 @injectable()
 export class UsersController
@@ -27,7 +28,7 @@ export class UsersController
     this.bindRoutes([
       {
         method: 'post',
-        path: '/',
+        path: '/register',
         func: this.register,
         middlewares: [new ValidateMiddleware(UserRegisterDto)],
       },
@@ -41,7 +42,7 @@ export class UsersController
         method: 'delete',
         path: '/:id',
         func: this.deleteUser,
-        middlewares: [new AuthGuard()],
+        middlewares: [new AuthGuard(), new CanPerformGuard()],
       },
       {
         method: 'get',
@@ -59,13 +60,17 @@ export class UsersController
         method: 'get',
         path: '/:id/balance',
         func: this.getUserBalance,
-        middlewares: [new AuthGuard()],
+        middlewares: [new AuthGuard(), new CanPerformGuard()],
       },
       {
         method: 'put',
         path: '/:id',
         func: this.updateUser,
-        middlewares: [new ValidateMiddleware(UpdateUserDto), new AuthGuard()],
+        middlewares: [
+          new ValidateMiddleware(UpdateUserDto),
+          new AuthGuard(),
+          new CanPerformGuard(),
+        ],
       },
     ]);
   }
@@ -73,8 +78,8 @@ export class UsersController
   async register(req: Request, res: Response, next: NextFunction) {
     try {
       const { email, password, name } = req.body;
-      const user = await this.authService.register(email, password, name);
-      return this.created(res, user);
+      const token = await this.authService.register(email, password, name);
+      return this.created(res, { token });
     } catch (err) {
       return next(err); // pass error to ExceptionFilter
     }

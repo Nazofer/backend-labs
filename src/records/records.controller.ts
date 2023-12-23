@@ -49,9 +49,9 @@ export class RecordsController
   }
 
   async createRecord(req: Request, res: Response, next: NextFunction) {
-    const body = req.body;
+    const { body, id: userId } = req;
     try {
-      const record = await this.recordsService.create(body);
+      const record = await this.recordsService.create(body, userId!);
       return this.ok(res, record);
     } catch (err) {
       next(err);
@@ -60,8 +60,9 @@ export class RecordsController
 
   async deleteRecord(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params;
+    const { id: userId } = req; // from auth middleware
     try {
-      await this.recordsService.delete(Number(id));
+      await this.recordsService.delete(Number(id), userId!);
       return this.ok(res, { message: 'Record deleted' });
     } catch (err) {
       return next(err);

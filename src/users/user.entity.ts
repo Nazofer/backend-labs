@@ -4,7 +4,9 @@ import {
   PrimaryGeneratedColumn,
   Unique,
   BeforeInsert,
+  OneToMany,
 } from 'typeorm';
+import { Record } from '../records/record.entity.js';
 
 @Entity()
 export class User {
@@ -19,4 +21,7 @@ export class User {
 
   @Column()
   password: string;
+
+  @OneToMany(() => Record, (record) => record.userId, { onDelete: 'CASCADE' })
+  records: Record[];
 }

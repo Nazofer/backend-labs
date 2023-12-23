@@ -5,7 +5,7 @@ import 'dotenv/config';
 
 // Define an interface for the JWT payload
 interface CustomJwtPayload extends JwtPayload {
-  email: string;
+  id: number;
 }
 
 export class AuthMiddleware implements IMiddleWare {
@@ -18,7 +18,7 @@ export class AuthMiddleware implements IMiddleWare {
         if (err) {
           next();
         } else if (payload as CustomJwtPayload) {
-          req.email = (payload as CustomJwtPayload).email;
+          req.id = (payload as CustomJwtPayload).id;
           next();
         }
       });
