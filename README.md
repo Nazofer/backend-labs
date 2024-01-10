@@ -1,20 +1,25 @@
 # backend_labs
 
-## Lab 2
+## Lab 3: Validation, error handling, ORM
 
-The practical task is to develop a basic REST API application for cost accounting. The application should provide the user with the following features:
-- Creating a user
-- Create an expense category
-- Create an expense record
-- Getting a list of categories
-- Getting a list of records for a specific user
-- Getting a list of records in a category for a specific user
+### Objective: Improve the project by validating the input data, handling errors, and using ORM with the database
+Tasks:
+- Learn validation and error handling
+- Define ORM models for the application
+- Use the database
+- Test the application
+
+Variant: 
+
+3 % 3 = 0
+
+0: Облік доходів - потрібно зробити сутність “рахунок” куди можна додавати гроші по мірі їх надходження(для кожного користувача свій) і звідти списуються кошти атоматично при створенні нової витрати.
 
 ### Getting started
 
 1. Clone repo: `git clone https://github.com/Nazofer/backend-labs`
 
-2. Checkout to branch: `git checkout second-lab`
+2. Checkout to branch: `git checkout third-lab`
 
 3. Install dependencies: `npm install`
 
